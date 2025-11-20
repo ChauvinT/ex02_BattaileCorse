@@ -17,9 +17,6 @@ namespace ex02_BattaileCorse.Classes
 
         public Anneau<T> Dernier;
 
-        public Anneau<T> Precedent { get; set; }
-        public Anneau<T> Suivant { get; set; }
-
         public Anneau()
         {
  
@@ -33,8 +30,7 @@ namespace ex02_BattaileCorse.Classes
             }
             else
             {
-                Anneau<T> dernier = Dernier;
-                dernier.Suivant = new Anneau<T> { Valeur = element, Precedent = dernier};
+
             }
         }
 
