@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ex02_BattaileCorse.Classes
 {
@@ -11,39 +12,30 @@ namespace ex02_BattaileCorse.Classes
     {
         private int NbElements;
 
-        public T Valeur { get; set; }
+        public Maillon<T> Maillon;
 
-        public Anneau<T> Premier { get; private set; }
-
-        public Anneau<T> Dernier;
+        public LinkedList<T> anneau = new LinkedList<T>();
+        public Anneau<T> suivant;
 
         public Anneau()
         {
- 
+            this.NbElements = 0;
+            suivant = null;
         }
 
         public void AjouterALaFin(T element)
         {
-            if (Premier == null)
-            {
-                Premier = new Anneau<T> { Valeur = element };
-            }
-            else
-            {
-
-            }
+            anneau.AddLast(element);
         }
 
         public void Retirer(T element)
         {
-            if (Premier == null)
-            {
-                return;
-            }
-            else
-            {
+            anneau.Remove(element);
+        }
 
-            }
+        public void RetirerPremier()
+        {
+            anneau.RemoveFirst();
         }
     }
 }

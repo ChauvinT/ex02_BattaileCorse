@@ -26,43 +26,32 @@ namespace ex02_BattaileCorse
         public static void Main(string[] args)
         {
             List<string> listCouleur = new List<string>();
-            Console.WriteLine("The values of the Colors Enum are:");
-            foreach (var value in Enum.GetValues(typeof(CarteCouleur)))
-            {
-                Console.WriteLine(value);
-                listCouleur.Add(value.ToString());
-            }
-
-
-            Console.WriteLine();
-
             List<string> listValeur = new List<string>();
-            Console.WriteLine("The values of the Styles Enum are:");
-            foreach (var value in Enum.GetValues(typeof(CarteValeur)))
+            List<string> listPaquet = new List<string>();
+
+            foreach (var color in Enum.GetValues(typeof(CarteCouleur)))
             {
-                Console.WriteLine(value);
-                listValeur.Add(value.ToString());
+                foreach (var value in Enum.GetValues(typeof(CarteValeur)))
+                {
+                    listPaquet.Add(value.ToString() + " de " + color.ToString());
+                }
             }
 
-            Console.WriteLine();
+            // Affichage du paquet 
+            /*foreach (var item in listPaquet)
+            {
+                Console.WriteLine(item);
+            }*/
 
-
-            
-            Random rndCouleur = new Random();
-            var shuffledListCouleur = listCouleur.OrderBy(item => rndCouleur.Next()).ToList();
+            Random randomPaquet = new Random();
+            var shuffledListePaquet = listPaquet.OrderBy(item => randomPaquet.Next()).ToList();
             Console.WriteLine("Shuffled List:");
-            foreach (var item in shuffledListCouleur)
+            foreach (var item in shuffledListePaquet)
             {
-                Console.Write(item + " ");
+                Console.WriteLine(item);
             }
 
-            Random rndValeur = new Random();
-            var shuffledListValeur = listValeur.OrderBy(item => rndValeur.Next()).ToList();
-            Console.WriteLine("Shuffled List:");
-            foreach (var item in shuffledListValeur)
-            {
-                Console.Write(item + " ");
-            }
+
 
             // gérer l'init du paquet de cartes
 

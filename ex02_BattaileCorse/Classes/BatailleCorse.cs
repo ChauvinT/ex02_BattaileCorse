@@ -8,6 +8,6 @@ namespace ex02_BattaileCorse.Classes
 {
     public class BatailleCorse
     {
-
+        public BatailleCorse() { }
     }
 }
