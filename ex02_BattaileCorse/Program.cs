@@ -1,69 +1,34 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿using ex02_BattaileCorse.Classes;
+using Microsoft.VisualBasic.FileIO;
 
 namespace ex02_BattaileCorse
 {
     internal class Program
     {
-        public enum CarteCouleur
-        {
-            COEUR,
-            PIQUE,
-            CARREAU,
-            TREFLE
-        }
-        public enum CarteValeur
-        {
-            SEPT,
-            HUIT,
-            NEUF,
-            DIX,
-            VALET,
-            DAME,
-            ROI,
-            AS
-        }
-
         public static void Main(string[] args)
         {
-            List<string> listCouleur = new List<string>();
-            List<string> listValeur = new List<string>();
-            List<string> listPaquet = new List<string>();
-
-            foreach (var color in Enum.GetValues(typeof(CarteCouleur)))
-            {
-                foreach (var value in Enum.GetValues(typeof(CarteValeur)))
-                {
-                    listPaquet.Add(value.ToString() + " de " + color.ToString());
-                }
-            }
-
-            // Affichage du paquet 
-            /*foreach (var item in listPaquet)
-            {
-                Console.WriteLine(item);
-            }*/
-
-            Random randomPaquet = new Random();
-            var shuffledListePaquet = listPaquet.OrderBy(item => randomPaquet.Next()).ToList();
-            Console.WriteLine("Shuffled List:");
-            foreach (var item in shuffledListePaquet)
-            {
-                Console.WriteLine(item);
-            }
+            List<string> CartesAjouer = new List<string>();
+            List<Joueur> ListeJoueurs = new List<Joueur>();
 
 
+            BatailleCorse PaquetBatailleCorse = new BatailleCorse(CartesAjouer, ListeJoueurs);
+            CartesAjouer = PaquetBatailleCorse.MelangerCarte();
+            PaquetBatailleCorse.AfficherCarte(CartesAjouer);
 
-            // gérer l'init du paquet de cartes
 
-            // créer 1 enum pour les coueleurs et 1 enum pour les valeurs
-            // puis utiliser Enum.GetValues()
-            // cela va créer
+            Joueur joueur01 = new Joueur("Thomas", new List<String> { });
+            ListeJoueurs.Add(joueur01);
+            Joueur joueur02 = new Joueur("Rémi", new List<String> { });
+            ListeJoueurs.Add(joueur02);
 
-            // shuffle la liste
+            PaquetBatailleCorse.DistribueToutesLesCartes(CartesAjouer, ListeJoueurs);
 
-            // console.writeline sur tout ce qu'il y a dans le jeu de carte
-            // mélanger 
-            // puis réafficher une fois mélangé
+            joueur01.AfficherSesCartes();
+
+            joueur02.AfficherSesCartes();
+
+            joueur01.TirerUneCarte();
+            joueur01.AfficherSesCartes();
 
             // 1 classe anneau + 1 classe maillon
             // 
