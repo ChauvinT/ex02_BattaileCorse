@@ -7,28 +7,35 @@ namespace ex02_BattaileCorse
     {
         public static void Main(string[] args)
         {
-            List<string> CartesAjouer = new List<string>();
+            List<Carte> CartesAjouer = new List<Carte>();
             List<Joueur> ListeJoueurs = new List<Joueur>();
 
 
-            BatailleCorse PaquetBatailleCorse = new BatailleCorse(CartesAjouer, ListeJoueurs);
+            Paquet PaquetBatailleCorse = new Paquet(CartesAjouer, ListeJoueurs);
             CartesAjouer = PaquetBatailleCorse.MelangerCarte();
             PaquetBatailleCorse.AfficherCarte(CartesAjouer);
 
 
-            Joueur joueur01 = new Joueur("Thomas", new List<String> { });
+            Joueur joueur01 = new Joueur("Julie", new List<Carte> { });
             ListeJoueurs.Add(joueur01);
-            Joueur joueur02 = new Joueur("Rémi", new List<String> { });
+            Joueur joueur02 = new Joueur("Maxime", new List<Carte> { });
             ListeJoueurs.Add(joueur02);
+            Joueur joueur03 = new Joueur("Melanie", new List<Carte> { });
+            ListeJoueurs.Add(joueur03);
 
             PaquetBatailleCorse.DistribueToutesLesCartes(CartesAjouer, ListeJoueurs);
 
-            joueur01.AfficherSesCartes();
-
+            /*joueur01.AfficherSesCartes();
             joueur02.AfficherSesCartes();
+            joueur03.AfficherSesCartes();
 
             joueur01.TirerUneCarte();
-            joueur01.AfficherSesCartes();
+            joueur01.AfficherSesCartes();*/
+
+            BatailleCorse nouvelleBatailleCorse = new BatailleCorse(ListeJoueurs);
+            nouvelleBatailleCorse.PlayGame();
+
+            // Pour lancer
 
             // 1 classe anneau + 1 classe maillon
             // 

@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,87 +6,128 @@ using System.Threading.Tasks;
 
 namespace ex02_BattaileCorse.Classes
 {
-    public class BatailleCorse
+    internal class BatailleCorse
     {
-        public List<string> ListeCartes;
-        public BatailleCorse(List<string> listeCartes, List<Joueur> listeJoueurs) 
-        { 
-            ListeCartes = listeCartes;
+        List<Joueur> ListeJoueurs = new List<Joueur>();
+        List<Carte> ListeCartesDefaussees = new List<Carte>();
+        public int indexJoueurEnCours = 0;
+
+        public BatailleCorse(List<Joueur>listeJoueurs ) 
+        {
+            ListeJoueurs = listeJoueurs;
         }
 
-        // Initialise puis mélange un nouveau paquet de carte
-        public List<String> MelangerCarte()
+        public void PlayGame()
         {
-            List<string> listCouleur    = new List<string>();
-            List<string> listValeur     = new List<string>();
-            List<string> listPaquet     = new List<string>();
-            List<string> listMelangees  = new List<string>();
-
-            foreach (var color in Enum.GetValues(typeof(CarteCouleur)))
-            {
-                foreach (var value in Enum.GetValues(typeof(CarteValeur)))
-                {
-                    listPaquet.Add(value.ToString() + " de " + color.ToString());
-                }
-            }
-
-            Random randomPaquet = new Random();
-            var shuffledListePaquet = listPaquet.OrderBy(item => randomPaquet.Next()).ToList();
-            foreach (var item in shuffledListePaquet)
-            {
-                listMelangees.Add(item.ToString());
-            }
-
-            return listMelangees;
-        }
-
-        public void AfficherCarte(List<string> listPaquet)
-        {
-            foreach (var item in listPaquet)
-            {
-                Console.WriteLine(item);
-            }
-        }
-
-        public bool DistribueUneCarte(List<String> listeCartes, Joueur joueur)
-        {
-            if (listeCartes.Count == 0)
-            {
-                Console.WriteLine("Il n'y a plus de cartes à distribuer \n");
-                return false;
-            }
             
-            joueur.Cartes.Add(listeCartes[0]);
-            listeCartes.RemoveAt(0);
-
-            return true;
+            while (ListeJoueurs.Count() > 1)
+            {
+                JouerTour();
+            }
+            Console.WriteLine($"Le Joueur {ListeJoueurs[0].GetNomJoueur()} remporte la partie");
         }
 
-        public bool DistribueToutesLesCartes(List<String> listeCartes, List<Joueur> listeJoueurs)
+        public void JouerTour()
         {
-            if (listeCartes.Count == 0)
+            if (indexJoueurEnCours >= ListeJoueurs.Count())
             {
-                Console.WriteLine("Il n'y a plus de cartes à distribuer \n");
-                return false;
+                indexJoueurEnCours = 0;
             }
 
-            while(listeCartes.Count > 0)
+            var joueurEnCours = ListeJoueurs[indexJoueurEnCours].GetNomJoueur();
+            
+            if (ListeJoueurs[indexJoueurEnCours].Cartes.Count() == 0)
             {
-                foreach (var unJoueur in listeJoueurs)
+                Console.WriteLine($"Le Joueur {joueurEnCours} ne possède plus de carte : il est éliminé\n");
+                ListeJoueurs.RemoveAt(indexJoueurEnCours);
+                return;
+            }
+
+            var carteTiree = new Carte(new CarteCouleur(), new CarteValeur());
+            try
+            {
+                carteTiree = ListeJoueurs[indexJoueurEnCours].TirerUneCarte();
+                ListeCartesDefaussees.Add(carteTiree);
+            }
+            catch
+            {
+                Console.WriteLine($"Le Joueur {joueurEnCours} ne possède plus de carte : il est éliminé\n");
+                ListeJoueurs.RemoveAt(indexJoueurEnCours);
+                return;
+            }
+
+
+            Console.WriteLine($"{joueurEnCours} joue : {carteTiree.ToString()}");
+
+
+            if ((int) carteTiree.Valeur > (int) CarteValeur.DIX)
+            {
+                RealiserDefi(carteTiree);
+            }
+            indexJoueurEnCours++;
+        }
+
+        public void RealiserDefi(Carte carteTiree)
+        {
+            var carteProchainJoueur = new Carte(new CarteCouleur(), new CarteValeur());
+            int nbTentatives = carteTiree.GetTentativesAuthorisees();
+
+            //Console.WriteLine("DEFI Carte : " + carteTiree.ToString());
+            //Console.WriteLine("Nb tentatives :" + nbTentatives);
+
+            int indexProchainJoueur = indexJoueurEnCours+1;
+            bool defiRemporte = false;
+
+            if (indexProchainJoueur >= ListeJoueurs.Count())
+            {
+                indexProchainJoueur = 0;
+            }
+
+            while (!defiRemporte && nbTentatives > 0)
+            {        
+                try{
+                    carteProchainJoueur = ListeJoueurs[indexProchainJoueur].TirerUneCarte();
+                    ListeCartesDefaussees.Add(carteProchainJoueur);
+                }
+                catch
                 {
-                    if (DistribueUneCarte(listeCartes, unJoueur) == false)
+                    Console.WriteLine($"Le Joueur {ListeJoueurs[indexProchainJoueur].GetNomJoueur()} ne possède plus de carte : il est éliminé \n");
+                    ListeJoueurs.RemoveAt(indexProchainJoueur);
+                    return;
+                }
+
+                Console.WriteLine($"{ListeJoueurs[indexProchainJoueur].GetNomJoueur()} joue : {carteProchainJoueur.ToString()}");
+
+                if ((int)carteProchainJoueur.Valeur > (int)CarteValeur.DIX)
+                {
+                    defiRemporte = true;
+                }
+                else
+                {
+                    nbTentatives--;
+                    if (indexProchainJoueur >= ListeJoueurs.Count())
                     {
-                        break;
+                        indexProchainJoueur = 0;
                     }
                 }
             }
-            Console.WriteLine("Toutes les cartes ont été distribué \n");
-            return true;
-        }
 
-        public List<string> getListeCarte()
-        {
-            return ListeCartes;
+            // le jouer qui a lancé le défi remporte les cartes défaussées;
+            if (!defiRemporte)
+            {
+                foreach (var carte in ListeCartesDefaussees)
+                {
+                    ListeJoueurs[indexJoueurEnCours].Cartes.Add(carte);
+                }
+                Console.WriteLine($"Le défi est perdu ! {ListeJoueurs[indexJoueurEnCours].GetNomJoueur()} remporte {ListeCartesDefaussees.Count} cartes.\n");
+                ListeCartesDefaussees.Clear();
+            }
+
+            indexJoueurEnCours = indexProchainJoueur;
+            if (defiRemporte) 
+            {
+                RealiserDefi(carteProchainJoueur);
+            }
         }
     }
 }

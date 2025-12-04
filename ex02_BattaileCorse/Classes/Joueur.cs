@@ -9,8 +9,8 @@ namespace ex02_BattaileCorse.Classes
     public class Joueur
     {
         public String Nom {  get; set; }
-        public List<String> Cartes = new List<String>();
-        public Joueur(string nom, List<string> cartes)
+        public List<Carte> Cartes = new List<Carte>();
+        public Joueur(string nom, List<Carte> cartes)
         {
             Nom = nom;
             Cartes = cartes;
@@ -25,10 +25,17 @@ namespace ex02_BattaileCorse.Classes
             Console.WriteLine();
         }
 
-        public void TirerUneCarte()
+        public Carte TirerUneCarte()
         {
-            Console.WriteLine($"Le Joueur {GetNomJoueur()} a tiré la carte : {Cartes[0]} (celle-ci est défaussée) \n");
+            if (Cartes.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(Cartes));
+            }
+            var CarteTiree = Cartes[0];
+
             Cartes.RemoveAt(0);
+
+            return CarteTiree;
         }
 
         public String GetNomJoueur()
