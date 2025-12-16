@@ -8,34 +8,47 @@ using System.Xml.Linq;
 
 namespace ex02_BattaileCorse.Classes
 {
-    public class Anneau<T>
+    public class Anneau<T> where T : class
     {
-        private int NbElements;
+        public int NbElements {get; private set;}
 
-        public Maillon<T> Maillon;
-
-        public LinkedList<T> anneau = new LinkedList<T>();
-        public Anneau<T> suivant;
+        private Maillon<T> premierMaillon;
 
         public Anneau()
         {
             this.NbElements = 0;
-            suivant = null;
+            premierMaillon = null;
         }
 
         public void AjouterALaFin(T element)
         {
-            anneau.AddLast(element);
+            var maillon = premierMaillon.Suivant;
+            while(maillon.Suivant != null)
+            {
+                maillon = maillon.Suivant;
+            }
+
+            maillon.Suivant = new Maillon<T>(element);
         }
 
         public void Retirer(T element)
-        {
-            anneau.Remove(element);
+        {            
+            var maillon = premierMaillon.Suivant;
+            while(maillon.Suivant.Valeur != element)
+            {
+                maillon = maillon.Suivant;
+            }
+
+            maillon.Suivant = maillon.Suivant.Suivant;
         }
 
-        public void RetirerPremier()
+        public T RetirerPremier()
         {
-            anneau.RemoveFirst();
+            var premier = premierMaillon.Valeur;
+
+            premierMaillon = premierMaillon.Suivant;
+            
+            return premier;
         }
     }
 }

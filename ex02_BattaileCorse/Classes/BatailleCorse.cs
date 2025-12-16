@@ -8,11 +8,11 @@ namespace ex02_BattaileCorse.Classes
 {
     internal class BatailleCorse
     {
-        List<Joueur> ListeJoueurs = new List<Joueur>();
-        List<Carte> ListeCartesDefaussees = new List<Carte>();
+        Anneau<Joueur> ListeJoueurs;
+        Anneau<Carte> ListeCartesDefaussees = new Anneau<Carte>();
         public int indexJoueurEnCours = 0;
 
-        public BatailleCorse(List<Joueur>listeJoueurs ) 
+        public BatailleCorse(Anneau<Joueur>listeJoueurs ) 
         {
             ListeJoueurs = listeJoueurs;
         }
@@ -20,54 +20,49 @@ namespace ex02_BattaileCorse.Classes
         public void PlayGame()
         {
             
-            while (ListeJoueurs.Count() > 1)
+            while (ListeJoueurs.NbElements > 1)
             {
                 JouerTour();
             }
-            Console.WriteLine($"Le Joueur {ListeJoueurs[0].GetNomJoueur()} remporte la partie");
+
+            Console.WriteLine($"Le Joueur {ListeJoueurs.RetirerPremier().Nom} remporte la partie");
         }
 
         public void JouerTour()
         {
-            if (indexJoueurEnCours >= ListeJoueurs.Count())
-            {
-                indexJoueurEnCours = 0;
-            }
-
-            var joueurEnCours = ListeJoueurs[indexJoueurEnCours].GetNomJoueur();
+            var joueurEnCours = ListeJoueurs.RetirerPremier();
             
-            if (ListeJoueurs[indexJoueurEnCours].Cartes.Count() == 0)
+            if (joueurEnCours.Cartes.Count() == 0)
             {
-                Console.WriteLine($"Le Joueur {joueurEnCours} ne possède plus de carte : il est éliminé\n");
-                ListeJoueurs.RemoveAt(indexJoueurEnCours);
+                Console.WriteLine($"Le Joueur {joueurEnCours.GetNomJoueur()} ne possède plus de carte : il est éliminé\n");
                 return;
             }
 
             var carteTiree = new Carte(new CarteCouleur(), new CarteValeur());
             try
             {
-                carteTiree = ListeJoueurs[indexJoueurEnCours].TirerUneCarte();
-                ListeCartesDefaussees.Add(carteTiree);
+                carteTiree = joueurEnCours.TirerUneCarte();
+                ListeCartesDefaussees.AjouterALaFin(carteTiree);
             }
             catch
             {
-                Console.WriteLine($"Le Joueur {joueurEnCours} ne possède plus de carte : il est éliminé\n");
-                ListeJoueurs.RemoveAt(indexJoueurEnCours);
+                Console.WriteLine($"Le Joueur {joueurEnCours.GetNomJoueur()} ne possède plus de carte : il est éliminé\n");
                 return;
             }
 
 
-            Console.WriteLine($"{joueurEnCours} joue : {carteTiree.ToString()}");
+            Console.WriteLine($"{joueurEnCours.GetNomJoueur()} joue : {carteTiree.ToString()}");
 
 
             if ((int) carteTiree.Valeur > (int) CarteValeur.DIX)
             {
-                RealiserDefi(carteTiree);
+                RealiserDefi(carteTiree, joueurEnCours);
             }
-            indexJoueurEnCours++;
+
+            ListeJoueurs.AjouterALaFin(joueurEnCours);
         }
 
-        public void RealiserDefi(Carte carteTiree)
+        public void RealiserDefi(Carte carteTiree, Joueur joueurEnCours)
         {
             var carteProchainJoueur = new Carte(new CarteCouleur(), new CarteValeur());
             int nbTentatives = carteTiree.GetTentativesAuthorisees();
@@ -75,28 +70,22 @@ namespace ex02_BattaileCorse.Classes
             //Console.WriteLine("DEFI Carte : " + carteTiree.ToString());
             //Console.WriteLine("Nb tentatives :" + nbTentatives);
 
-            int indexProchainJoueur = indexJoueurEnCours+1;
             bool defiRemporte = false;
-
-            if (indexProchainJoueur >= ListeJoueurs.Count())
-            {
-                indexProchainJoueur = 0;
-            }
+            var prochainJoueur = ListeJoueurs.RetirerPremier();
 
             while (!defiRemporte && nbTentatives > 0)
             {        
                 try{
-                    carteProchainJoueur = ListeJoueurs[indexProchainJoueur].TirerUneCarte();
-                    ListeCartesDefaussees.Add(carteProchainJoueur);
+                    carteProchainJoueur = prochainJoueur.TirerUneCarte();
+                    ListeCartesDefaussees.AjouterALaFin(carteProchainJoueur);
                 }
                 catch
                 {
-                    Console.WriteLine($"Le Joueur {ListeJoueurs[indexProchainJoueur].GetNomJoueur()} ne possède plus de carte : il est éliminé \n");
-                    ListeJoueurs.RemoveAt(indexProchainJoueur);
+                    Console.WriteLine($"Le Joueur {prochainJoueur.GetNomJoueur()} ne possède plus de carte : il est éliminé \n");
                     return;
                 }
 
-                Console.WriteLine($"{ListeJoueurs[indexProchainJoueur].GetNomJoueur()} joue : {carteProchainJoueur.ToString()}");
+                Console.WriteLine($"{prochainJoueur.GetNomJoueur()} joue : {carteProchainJoueur.ToString()}");
 
                 if ((int)carteProchainJoueur.Valeur > (int)CarteValeur.DIX)
                 {
@@ -105,28 +94,21 @@ namespace ex02_BattaileCorse.Classes
                 else
                 {
                     nbTentatives--;
-                    if (indexProchainJoueur >= ListeJoueurs.Count())
-                    {
-                        indexProchainJoueur = 0;
-                    }
                 }
             }
 
             // le jouer qui a lancé le défi remporte les cartes défaussées;
             if (!defiRemporte)
             {
-                foreach (var carte in ListeCartesDefaussees)
+                Console.WriteLine($"Le défi est perdu ! {joueurEnCours.GetNomJoueur()} remporte {ListeCartesDefaussees.NbElements} cartes.\n");
+                while(ListeCartesDefaussees.NbElements >0)
                 {
-                    ListeJoueurs[indexJoueurEnCours].Cartes.Add(carte);
+                    joueurEnCours.Cartes.Add(ListeCartesDefaussees.RetirerPremier());
                 }
-                Console.WriteLine($"Le défi est perdu ! {ListeJoueurs[indexJoueurEnCours].GetNomJoueur()} remporte {ListeCartesDefaussees.Count} cartes.\n");
-                ListeCartesDefaussees.Clear();
             }
-
-            indexJoueurEnCours = indexProchainJoueur;
-            if (defiRemporte) 
+            else
             {
-                RealiserDefi(carteProchainJoueur);
+                RealiserDefi(carteProchainJoueur, prochainJoueur);
             }
         }
     }

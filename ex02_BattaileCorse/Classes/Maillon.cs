@@ -8,13 +8,13 @@ namespace ex02_BattaileCorse.Classes
 {
     public class Maillon<T>
     {
-        public T Valeur;
+        public readonly T Valeur;
         public Maillon<T> Suivant;
 
-        public Maillon(T valeur)
+        public Maillon(T valeur, Maillon<T> suivant = null)
         {
             Valeur = valeur;
-            Suivant = null;
+            Suivant = suivant;
         }
     }
 }

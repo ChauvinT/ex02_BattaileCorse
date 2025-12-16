@@ -8,7 +8,7 @@ namespace ex02_BattaileCorse
         public static void Main(string[] args)
         {
             List<Carte> CartesAjouer = new List<Carte>();
-            List<Joueur> ListeJoueurs = new List<Joueur>();
+            Anneau<Joueur> ListeJoueurs = new Anneau<Joueur>();
 
 
             Paquet PaquetBatailleCorse = new Paquet(CartesAjouer, ListeJoueurs);
@@ -17,11 +17,11 @@ namespace ex02_BattaileCorse
 
 
             Joueur joueur01 = new Joueur("Julie", new List<Carte> { });
-            ListeJoueurs.Add(joueur01);
+            ListeJoueurs.AjouterALaFin(joueur01);
             Joueur joueur02 = new Joueur("Maxime", new List<Carte> { });
-            ListeJoueurs.Add(joueur02);
+            ListeJoueurs.AjouterALaFin(joueur02);
             Joueur joueur03 = new Joueur("Melanie", new List<Carte> { });
-            ListeJoueurs.Add(joueur03);
+            ListeJoueurs.AjouterALaFin(joueur03);
 
             PaquetBatailleCorse.DistribueToutesLesCartes(CartesAjouer, ListeJoueurs);
 
